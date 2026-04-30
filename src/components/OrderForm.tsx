@@ -90,7 +90,7 @@ export default function OrderForm({ initial, onSave, onCancel }: Props) {
       onClick={(e) => e.target === e.currentTarget && onCancel()}
     >
       <div
-        className="w-full max-w-lg rounded-xl animate-fade-in"
+        className="w-full max-w-2xl rounded-xl animate-fade-in"
         style={{ background: "white", boxShadow: "0 16px 48px rgba(0,0,0,0.18)" }}
       >
         {/* Header */}
@@ -153,17 +153,25 @@ export default function OrderForm({ initial, onSave, onCancel }: Props) {
                 {Object.keys(REGIONS).map((r) => <option key={r} value={r}>{r}</option>)}
               </select>
             </Field>
-            <Field label="Город">
-              <select
-                value={form.city}
-                onChange={(e) => setField("city", e.target.value)}
-                disabled={!form.region}
-                className="w-full rounded-lg px-3 py-2 text-sm outline-none disabled:opacity-50"
-                style={{ border: "1px solid hsl(220, 15%, 84%)", color: form.city ? "hsl(220,25%,12%)" : "hsl(220,10%,60%)" }}
-              >
-                <option value="">Сначала область</option>
-                {cities.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
+            <Field label="Город / населённый пункт">
+              <div className="relative">
+                <input
+                  list={form.region ? `cities-${form.region}` : undefined}
+                  value={form.city}
+                  onChange={(e) => setField("city", e.target.value)}
+                  disabled={!form.region}
+                  placeholder={form.region ? "Выберите или введите..." : "Сначала область"}
+                  className="w-full rounded-lg px-3 py-2 text-sm outline-none disabled:opacity-50"
+                  style={{ border: "1px solid hsl(220, 15%, 84%)", color: "hsl(220,25%,12%)" }}
+                  onFocus={(e) => (e.target.style.borderColor = "hsl(142,65%,40%)")}
+                  onBlur={(e) => (e.target.style.borderColor = "hsl(220,15%,84%)")}
+                />
+                {form.region && (
+                  <datalist id={`cities-${form.region}`}>
+                    {cities.map((c) => <option key={c} value={c} />)}
+                  </datalist>
+                )}
+              </div>
             </Field>
           </div>
 
