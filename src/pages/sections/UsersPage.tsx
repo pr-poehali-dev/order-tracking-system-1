@@ -11,7 +11,8 @@ export const roleMap: Record<UserRole, { label: string; bg: string; text: string
 
 const emptyUser = (): Omit<AppUser, "id" | "lastLogin" | "ordersCount"> => ({
   name: "",
-  email: "",
+  login: "",
+  password: "",
   role: "marketer",
   status: "active",
 });
@@ -30,7 +31,7 @@ export default function UsersPage() {
 
   const filtered = userList.filter((u) => {
     const q = search.toLowerCase();
-    return u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+    return u.name.toLowerCase().includes(q) || u.login.toLowerCase().includes(q);
   });
 
   const openAdd = () => {
@@ -42,14 +43,15 @@ export default function UsersPage() {
 
   const openEdit = (u: AppUser) => {
     setEditUser(u);
-    setForm({ name: u.name, email: u.email, role: u.role, status: u.status });
+    setForm({ name: u.name, login: u.login, password: u.password, role: u.role, status: u.status });
     setFormError("");
     setFormOpen(true);
   };
 
   const handleSave = () => {
     if (!form.name.trim()) { setFormError("Введите имя"); return; }
-    if (!form.email.trim()) { setFormError("Введите email"); return; }
+    if (!form.login.trim()) { setFormError("Введите логин"); return; }
+    if (!form.password.trim()) { setFormError("Введите пароль"); return; }
     setFormError("");
 
     if (editUser) {
@@ -99,7 +101,7 @@ export default function UsersPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Поиск по имени или email..."
+            placeholder="Поиск по имени или логину..."
             className="flex-1 outline-none text-sm bg-transparent"
             style={{ color: "hsl(220, 25%, 12%)" }}
           />
@@ -150,7 +152,7 @@ export default function UsersPage() {
                           {user.name}
                         </div>
                         <div className="text-xs font-mono" style={{ color: "hsl(220, 10%, 50%)" }}>
-                          {user.email}
+                          {user.login}
                         </div>
                       </div>
                     </div>
@@ -237,10 +239,20 @@ export default function UsersPage() {
                   onBlur={(e) => (e.target.style.borderColor = "hsl(220,15%,84%)")} />
               </FormField>
 
-              <FormField label="Email">
-                <input type="email" value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="user@company.ru"
+              <FormField label="Логин">
+                <input type="text" value={form.login}
+                  onChange={(e) => setForm({ ...form, login: e.target.value })}
+                  placeholder="ivanov"
+                  className="w-full rounded-lg px-3 py-2 text-sm outline-none font-mono"
+                  style={{ border: "1px solid hsl(220,15%,84%)", color: "hsl(220,25%,12%)" }}
+                  onFocus={(e) => (e.target.style.borderColor = "hsl(142,65%,40%)")}
+                  onBlur={(e) => (e.target.style.borderColor = "hsl(220,15%,84%)")} />
+              </FormField>
+
+              <FormField label="Пароль">
+                <input type="text" value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  placeholder="Введите пароль"
                   className="w-full rounded-lg px-3 py-2 text-sm outline-none"
                   style={{ border: "1px solid hsl(220,15%,84%)", color: "hsl(220,25%,12%)" }}
                   onFocus={(e) => (e.target.style.borderColor = "hsl(142,65%,40%)")}

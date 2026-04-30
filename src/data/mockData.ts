@@ -33,7 +33,8 @@ export interface Order {
 export interface AppUser {
   id: string;
   name: string;
-  email: string;
+  login: string;
+  password: string;
   role: UserRole;
   status: "active" | "inactive";
   lastLogin: string;
@@ -102,11 +103,11 @@ export const orders: Order[] = [
 ];
 
 export const users: AppUser[] = [
-  { id: "USR-001", name: "Козлов Андрей Петрович",     email: "kozlov@company.ru",    role: "admin",      status: "active",   lastLogin: "2026-04-30 09:14", ordersCount: 48 },
-  { id: "USR-002", name: "Иванова Надежда Сергеевна",  email: "ivanova@company.ru",   role: "marketer",   status: "active",   lastLogin: "2026-04-30 08:47", ordersCount: 34 },
-  { id: "USR-003", name: "Петров Игорь Владимирович",  email: "petrov@company.ru",    role: "marketer",   status: "active",   lastLogin: "2026-04-29 17:22", ordersCount: 29 },
-  { id: "USR-004", name: "Смирнова Елена Юрьевна",     email: "smirnova@company.ru",  role: "production", status: "inactive", lastLogin: "2026-04-15 11:05", ordersCount: 0  },
-  { id: "USR-005", name: "Дмитриев Кирилл Олегович",   email: "dmitriev@company.ru",  role: "production", status: "active",   lastLogin: "2026-04-28 14:30", ordersCount: 0  },
+  { id: "USR-001", name: "Козлов Андрей Петрович",     login: "kozlov",    password: "Admin123",  role: "admin",      status: "active",   lastLogin: "2026-04-30 09:14", ordersCount: 48 },
+  { id: "USR-002", name: "Иванова Надежда Сергеевна",  login: "ivanova",   password: "Pass456",   role: "marketer",   status: "active",   lastLogin: "2026-04-30 08:47", ordersCount: 34 },
+  { id: "USR-003", name: "Петров Игорь Владимирович",  login: "petrov",    password: "Pass789",   role: "marketer",   status: "active",   lastLogin: "2026-04-29 17:22", ordersCount: 29 },
+  { id: "USR-004", name: "Смирнова Елена Юрьевна",     login: "smirnova",  password: "Pass321",   role: "production", status: "inactive", lastLogin: "2026-04-15 11:05", ordersCount: 0  },
+  { id: "USR-005", name: "Дмитриев Кирилл Олегович",   login: "dmitriev",  password: "Pass654",   role: "production", status: "active",   lastLogin: "2026-04-28 14:30", ordersCount: 0  },
 ];
 
 export const statsCards = [
