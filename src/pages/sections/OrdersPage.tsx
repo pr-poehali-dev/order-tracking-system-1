@@ -22,6 +22,7 @@ export default function OrdersPage() {
   const [orderList, setOrderList] = useState<Order[]>(initialOrders);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
   const [sortBy, setSortBy] = useState<keyof Order>("date");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [formOpen, setFormOpen] = useState(false);
@@ -44,6 +45,7 @@ export default function OrdersPage() {
       );
     }
     if (statusFilter) list = list.filter((o) => o.status === statusFilter);
+    if (typeFilter) list = list.filter((o) => o.orderTypeId === typeFilter);
     list.sort((a, b) => {
       const av = a[sortBy];
       const bv = b[sortBy];
@@ -51,7 +53,7 @@ export default function OrdersPage() {
       return sortDir === "asc" ? cmp : -cmp;
     });
     return list;
-  }, [orderList, search, statusFilter, sortBy, sortDir]);
+  }, [orderList, search, statusFilter, typeFilter, sortBy, sortDir]);
 
   const exportData = filtered.map((o) => ({
     "Номер": o.id,
@@ -129,6 +131,18 @@ export default function OrdersPage() {
           <option value="">Все статусы</option>
           {ORDER_STATUSES.map((s) => (
             <option key={s.value} value={s.value}>{s.label}</option>
+          ))}
+        </select>
+
+        <select
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+          className="rounded-md px-3 py-2 text-sm outline-none"
+          style={{ background: "white", border: "1px solid hsl(220, 15%, 88%)", color: "hsl(220, 25%, 20%)" }}
+        >
+          <option value="">Все типы</option>
+          {orderTypes.map((t) => (
+            <option key={t.id} value={t.id}>{t.name}</option>
           ))}
         </select>
 
