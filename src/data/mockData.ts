@@ -1,3 +1,5 @@
+import type { UserRole } from "@/context/AuthContext";
+
 export interface OrderPosition {
   id: string;
   name: string;
@@ -8,6 +10,8 @@ export interface OrderPosition {
   amountUnknown: boolean;
   notes: string;
 }
+
+export type OrderStatus = "new" | "processing" | "assembly" | "completed" | "cancelled";
 
 export interface Order {
   id: string;
@@ -21,9 +25,19 @@ export interface Order {
   agreementDate: string;
   deliveryDate: string;
   amount: number;
-  status: "new" | "processing" | "shipped" | "completed" | "cancelled";
+  status: OrderStatus;
   date: string;
   manager: string;
+}
+
+export interface AppUser {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  status: "active" | "inactive";
+  lastLogin: string;
+  ordersCount: number;
 }
 
 export const REGIONS: Record<string, string[]> = {
@@ -34,6 +48,14 @@ export const REGIONS: Record<string, string[]> = {
   "Минская": ["Минск", "Борисов", "Солигорск", "Молодечно", "Жодино"],
   "Могилёвская": ["Могилёв", "Бобруйск", "Горки", "Осиповичи"],
 };
+
+export const ORDER_STATUSES: { value: OrderStatus; label: string; bg: string; text: string }[] = [
+  { value: "new",        label: "Новый",              bg: "hsl(210, 80%, 93%)", text: "hsl(210, 72%, 35%)" },
+  { value: "processing", label: "В работе",           bg: "hsl(38, 90%, 93%)",  text: "hsl(38, 72%, 35%)"  },
+  { value: "assembly",   label: "Передан на сборку",  bg: "hsl(260, 70%, 93%)", text: "hsl(260, 60%, 40%)" },
+  { value: "completed",  label: "Выполнен",           bg: "hsl(142, 60%, 92%)", text: "hsl(142, 65%, 28%)" },
+  { value: "cancelled",  label: "Отменён",            bg: "hsl(0, 60%, 93%)",   text: "hsl(0, 65%, 40%)"   },
+];
 
 const newPosition = (n = 1): OrderPosition => ({
   id: String(Date.now() + n),
@@ -60,34 +82,34 @@ export const orders: Order[] = [
     id: "ЗК-00123", contractNumber: "ДГ-2024/123", client: "ИП Сидоров В.Е.",
     phone: "+375 44 222-22-22", region: "Гомельская", city: "Гомель", address: "пр. Победы, 5",
     positions: [{ id: "2", name: "Трубы профильные", quantity: "5", price: "13440", amount: "67200", priceUnknown: false, amountUnknown: false, notes: "" }],
-    agreementDate: "2026-04-05", deliveryDate: "2026-04-27",
-    amount: 67200, status: "shipped", date: "2026-04-27", manager: "Иванова Н.С."
+    agreementDate: "2026-04-05", deliveryDate: "2026-05-10",
+    amount: 67200, status: "assembly", date: "2026-04-27", manager: "Иванова Н.С."
   },
   {
     id: "ЗК-00122", contractNumber: "ДГ-2024/122", client: "АО «СтройКомплект»",
     phone: "+375 29 333-33-33", region: "Витебская", city: "Витебск", address: "ул. Кирова, 12",
     positions: [{ id: "3", name: "Листовой металл", quantity: "20", price: "16000", amount: "320000", priceUnknown: false, amountUnknown: false, notes: "" }],
-    agreementDate: "2026-04-10", deliveryDate: "2026-04-26",
+    agreementDate: "2026-04-10", deliveryDate: "2026-05-03",
     amount: 320000, status: "processing", date: "2026-04-26", manager: "Козлов А.П."
   },
   {
     id: "ЗК-00121", contractNumber: "ДГ-2024/121", client: "ООО «Промснаб»",
     phone: "+375 33 444-44-44", region: "Брестская", city: "Брест", address: "ул. Советская, 8",
     positions: [{ id: "4", name: "Уголок стальной", quantity: "8", price: "5725", amount: "45800", priceUnknown: false, amountUnknown: false, notes: "" }],
-    agreementDate: "2026-04-12", deliveryDate: "2026-04-25",
+    agreementDate: "2026-04-12", deliveryDate: "2026-05-07",
     amount: 45800, status: "new", date: "2026-04-25", manager: "Петров И.В."
   },
 ];
 
-export const users = [
-  { id: "USR-001", name: "Козлов Андрей Петрович", email: "kozlov@company.ru", role: "admin" as const, status: "active" as const, lastLogin: "2026-04-30 09:14", ordersCount: 48 },
-  { id: "USR-002", name: "Иванова Надежда Сергеевна", email: "ivanova@company.ru", role: "manager" as const, status: "active" as const, lastLogin: "2026-04-30 08:47", ordersCount: 34 },
-  { id: "USR-003", name: "Петров Игорь Владимирович", email: "petrov@company.ru", role: "manager" as const, status: "active" as const, lastLogin: "2026-04-29 17:22", ordersCount: 29 },
-  { id: "USR-004", name: "Смирнова Елена Юрьевна", email: "smirnova@company.ru", role: "viewer" as const, status: "inactive" as const, lastLogin: "2026-04-15 11:05", ordersCount: 0 },
-  { id: "USR-005", name: "Дмитриев Кирилл Олегович", email: "dmitriev@company.ru", role: "viewer" as const, status: "active" as const, lastLogin: "2026-04-28 14:30", ordersCount: 0 },
+export const users: AppUser[] = [
+  { id: "USR-001", name: "Козлов Андрей Петрович",     email: "kozlov@company.ru",    role: "admin",      status: "active",   lastLogin: "2026-04-30 09:14", ordersCount: 48 },
+  { id: "USR-002", name: "Иванова Надежда Сергеевна",  email: "ivanova@company.ru",   role: "marketer",   status: "active",   lastLogin: "2026-04-30 08:47", ordersCount: 34 },
+  { id: "USR-003", name: "Петров Игорь Владимирович",  email: "petrov@company.ru",    role: "marketer",   status: "active",   lastLogin: "2026-04-29 17:22", ordersCount: 29 },
+  { id: "USR-004", name: "Смирнова Елена Юрьевна",     email: "smirnova@company.ru",  role: "production", status: "inactive", lastLogin: "2026-04-15 11:05", ordersCount: 0  },
+  { id: "USR-005", name: "Дмитриев Кирилл Олегович",   email: "dmitriev@company.ru",  role: "production", status: "active",   lastLogin: "2026-04-28 14:30", ordersCount: 0  },
 ];
 
 export const statsCards = [
   { title: "Заказов за месяц", value: "124", change: "+12%", trend: "up", icon: "ShoppingCart" },
-  { title: "Выручка, ₽", value: "4 218 500", change: "+8.3%", trend: "up", icon: "TrendingUp" },
+  { title: "Выручка, ₽",      value: "4 218 500", change: "+8.3%", trend: "up", icon: "TrendingUp" },
 ];
