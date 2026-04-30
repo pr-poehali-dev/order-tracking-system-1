@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
-import ExportMenu from "@/components/ExportMenu";
 import { users as initialUsers, AppUser } from "@/data/mockData";
 import { useAuth, UserRole } from "@/context/AuthContext";
 
@@ -33,15 +32,6 @@ export default function UsersPage() {
     const q = search.toLowerCase();
     return u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
   });
-
-  const exportData = filtered.map((u) => ({
-    "ID": u.id,
-    "Имя": u.name,
-    "Email": u.email,
-    "Роль": roleMap[u.role].label,
-    "Статус": u.status === "active" ? "Активен" : "Неактивен",
-    "Последний вход": u.lastLogin,
-  }));
 
   const openAdd = () => {
     setEditUser(null);
@@ -114,7 +104,6 @@ export default function UsersPage() {
             style={{ color: "hsl(220, 25%, 12%)" }}
           />
         </div>
-        <ExportMenu data={exportData} filename="пользователи" />
         {isAdmin && (
           <button
             onClick={openAdd}
