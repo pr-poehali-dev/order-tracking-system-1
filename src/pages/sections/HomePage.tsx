@@ -1,5 +1,6 @@
 import Icon from "@/components/ui/icon";
 import { statsCards, orders } from "@/data/mockData";
+import { useSettings } from "@/context/SettingsContext";
 
 const statusColors: Record<string, { bg: string; text: string; label: string }> = {
   new: { bg: "hsl(210, 80%, 93%)", text: "hsl(210, 72%, 35%)", label: "Новый" },
@@ -9,7 +10,24 @@ const statusColors: Record<string, { bg: string; text: string; label: string }> 
   cancelled: { bg: "hsl(0, 60%, 93%)", text: "hsl(0, 65%, 40%)", label: "Отменён" },
 };
 
+function getRowHighlight(deliveryDate: string, rules: { days: number; color: string }[]): string | null {
+  if (!deliveryDate) return null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const delivery = new Date(deliveryDate);
+  delivery.setHours(0, 0, 0, 0);
+  const diffDays = Math.ceil((delivery.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+  const sorted = [...rules].sort((a, b) => a.days - b.days);
+  for (const rule of sorted) {
+    if (diffDays <= rule.days && diffDays >= 0) return rule.color;
+  }
+  return null;
+}
+
 export default function HomePage() {
+  const { rules } = useSettings();
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Stats */}
@@ -58,6 +76,20 @@ export default function HomePage() {
         ))}
       </div>
 
+      {/* Legend */}
+      {rules.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs" style={{ color: "hsl(220, 10%, 55%)" }}>Подсветка:</span>
+          {rules.map((r) => (
+            <div key={r.id} className="flex items-center gap-1.5 text-xs rounded-md px-2 py-1"
+              style={{ background: r.color, color: "hsl(220,25%,15%)", border: "1px solid hsl(220,15%,82%)" }}>
+              <span>≤ {r.days} дн.</span>
+              {r.label && <span>— {r.label}</span>}
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Recent orders */}
       <div
         className="rounded-lg overflow-hidden"
@@ -79,7 +111,7 @@ export default function HomePage() {
           <table className="w-full">
             <thead>
               <tr style={{ background: "hsl(220, 20%, 98%)" }}>
-                {["Номер", "Клиент", "Сумма, ₽", "Статус", "Дата"].map((h) => (
+                {["Номер", "Клиент", "Сумма, руб.", "Статус", "Поставка"].map((h) => (
                   <th
                     key={h}
                     className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider"
@@ -93,11 +125,15 @@ export default function HomePage() {
             <tbody>
               {orders.slice(0, 7).map((order, i) => {
                 const s = statusColors[order.status];
+                const highlight = getRowHighlight(order.deliveryDate, rules);
                 return (
                   <tr
                     key={order.id}
-                    className="row-hover"
-                    style={{ borderBottom: i < 6 ? "1px solid hsl(220, 15%, 94%)" : "none" }}
+                    style={{
+                      borderBottom: i < 6 ? "1px solid hsl(220, 15%, 94%)" : "none",
+                      background: highlight ?? "transparent",
+                      transition: "background 0.15s",
+                    }}
                   >
                     <td className="px-5 py-3 font-mono text-xs font-medium" style={{ color: "hsl(220, 25%, 20%)" }}>
                       {order.id}
@@ -106,7 +142,7 @@ export default function HomePage() {
                       {order.client}
                     </td>
                     <td className="px-5 py-3 font-mono text-sm font-medium" style={{ color: "hsl(220, 25%, 15%)" }}>
-                      {order.amount.toLocaleString("ru-RU")}
+                      {order.amount > 0 ? order.amount.toLocaleString("ru-RU") : "—"}
                     </td>
                     <td className="px-5 py-3">
                       <span
@@ -117,7 +153,7 @@ export default function HomePage() {
                       </span>
                     </td>
                     <td className="px-5 py-3 text-xs font-mono" style={{ color: "hsl(220, 10%, 50%)" }}>
-                      {order.date}
+                      {order.deliveryDate || "—"}
                     </td>
                   </tr>
                 );

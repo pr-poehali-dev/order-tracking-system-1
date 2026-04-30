@@ -15,7 +15,6 @@ const navItems: { id: Section; label: string; icon: string }[] = [
   { id: "home", label: "Главная", icon: "LayoutDashboard" },
   { id: "orders", label: "Заказы", icon: "ShoppingCart" },
   { id: "users", label: "Пользователи", icon: "Users" },
-  { id: "settings", label: "Настройки", icon: "Settings" },
 ];
 
 export default function Dashboard({ onLogout }: Props) {
@@ -81,101 +80,77 @@ export default function Dashboard({ onLogout }: Props) {
           })}
         </nav>
 
-        {/* Right side */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          {/* Bell */}
+        {/* User menu */}
+        <div className="relative flex-shrink-0" ref={userMenuRef}>
           <button
-            className="relative p-2 rounded-md transition-colors"
-            style={{ color: "hsl(220, 10%, 55%)" }}
+            onClick={() => setUserMenuOpen(!userMenuOpen)}
+            className="flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors"
+            style={{ color: "hsl(220, 10%, 75%)" }}
             onMouseEnter={(e) => (e.currentTarget.style.background = "hsl(220, 25%, 20%)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            onMouseLeave={(e) => !userMenuOpen && (e.currentTarget.style.background = "transparent")}
           >
-            <Icon name="Bell" size={16} />
-            <span
-              className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full"
-              style={{ background: "hsl(142, 65%, 45%)" }}
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
+              style={{ background: "hsl(142, 50%, 22%)", color: "hsl(142, 70%, 65%)" }}
+            >
+              АД
+            </div>
+            <span className="text-sm font-medium hidden sm:block">Администратор</span>
+            <Icon
+              name="ChevronDown"
+              size={13}
+              className={`transition-transform ${userMenuOpen ? "rotate-180" : ""}`}
             />
           </button>
 
-          {/* User menu */}
-          <div className="relative" ref={userMenuRef}>
-            <button
-              onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="flex items-center gap-2 px-2 py-1.5 rounded-md transition-colors"
-              style={{ color: "hsl(220, 10%, 75%)" }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "hsl(220, 25%, 20%)")}
-              onMouseLeave={(e) => !userMenuOpen && (e.currentTarget.style.background = "transparent")}
+          {userMenuOpen && (
+            <div
+              className="absolute right-0 top-full mt-2 rounded-xl overflow-hidden z-50 animate-fade-in"
+              style={{
+                background: "white",
+                border: "1px solid hsl(220, 15%, 88%)",
+                boxShadow: "0 8px 28px rgba(0,0,0,0.14)",
+                minWidth: "200px",
+              }}
             >
-              <div
-                className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
-                style={{ background: "hsl(142, 50%, 22%)", color: "hsl(142, 70%, 65%)" }}
-              >
-                АД
-              </div>
-              <span className="text-sm font-medium hidden sm:block">Администратор</span>
-              <Icon
-                name="ChevronDown"
-                size={13}
-                className={`transition-transform ${userMenuOpen ? "rotate-180" : ""}`}
-              />
-            </button>
-
-            {/* Dropdown — как на скриншоте */}
-            {userMenuOpen && (
-              <div
-                className="absolute right-0 top-full mt-2 rounded-xl overflow-hidden z-50 animate-fade-in"
-                style={{
-                  background: "white",
-                  border: "1px solid hsl(220, 15%, 88%)",
-                  boxShadow: "0 8px 28px rgba(0,0,0,0.14)",
-                  minWidth: "200px",
-                }}
-              >
-                {/* User info */}
-                <div className="px-4 py-3" style={{ borderBottom: "1px solid hsl(220, 15%, 92%)" }}>
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
-                      style={{ background: "hsl(142, 50%, 90%)", color: "hsl(142, 65%, 28%)" }}
-                    >
-                      АД
+              {/* User info */}
+              <div className="px-4 py-3" style={{ borderBottom: "1px solid hsl(220, 15%, 92%)" }}>
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold flex-shrink-0"
+                    style={{ background: "hsl(142, 50%, 90%)", color: "hsl(142, 65%, 28%)" }}
+                  >
+                    АД
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold" style={{ color: "hsl(220, 25%, 12%)" }}>
+                      Администратор
                     </div>
-                    <div>
-                      <div className="text-sm font-semibold" style={{ color: "hsl(220, 25%, 12%)" }}>
-                        Администратор
-                      </div>
-                      <div className="text-xs" style={{ color: "hsl(220, 10%, 55%)" }}>
-                        Администратор
-                      </div>
+                    <div className="text-xs" style={{ color: "hsl(220, 10%, 55%)" }}>
+                      Администратор
                     </div>
                   </div>
                 </div>
-
-                {/* Menu items */}
-                <div className="py-1.5">
-                  <DropItem
-                    icon="Users"
-                    label="Пользователи"
-                    onClick={() => { setActive("users"); setUserMenuOpen(false); }}
-                  />
-                  <DropItem
-                    icon="Settings"
-                    label="Настройки"
-                    onClick={() => { setActive("settings"); setUserMenuOpen(false); }}
-                  />
-                </div>
-
-                <div style={{ borderTop: "1px solid hsl(220, 15%, 92%)" }} className="py-1.5">
-                  <DropItem
-                    icon="LogOut"
-                    label="Выйти"
-                    danger
-                    onClick={onLogout}
-                  />
-                </div>
               </div>
-            )}
-          </div>
+
+              <div className="py-1.5">
+                <DropItem
+                  icon="Users"
+                  label="Пользователи"
+                  onClick={() => { setActive("users"); setUserMenuOpen(false); }}
+                />
+                <DropItem
+                  icon="Settings"
+                  label="Настройки"
+                  onClick={() => { setActive("settings"); setUserMenuOpen(false); }}
+                />
+              </div>
+
+              <div style={{ borderTop: "1px solid hsl(220, 15%, 92%)" }} className="py-1.5">
+                <DropItem icon="LogOut" label="Выйти" danger onClick={onLogout} />
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
@@ -190,9 +165,7 @@ export default function Dashboard({ onLogout }: Props) {
   );
 }
 
-function DropItem({
-  icon, label, onClick, danger,
-}: {
+function DropItem({ icon, label, onClick, danger }: {
   icon: string;
   label: string;
   onClick: () => void;
