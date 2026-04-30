@@ -44,6 +44,4 @@ export const users: User[] = [
 export const statsCards = [
   { title: "Заказов за месяц", value: "124", change: "+12%", trend: "up", icon: "ShoppingCart" },
   { title: "Выручка, ₽", value: "4 218 500", change: "+8.3%", trend: "up", icon: "TrendingUp" },
-  { title: "Клиентов", value: "342", change: "+5", trend: "up", icon: "Users" },
-  { title: "Ср. чек, ₽", value: "34 020", change: "-2.1%", trend: "down", icon: "BarChart2" },
 ];

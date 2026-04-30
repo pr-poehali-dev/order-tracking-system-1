@@ -46,7 +46,7 @@ export default function Dashboard({ onLogout }: Props) {
           </div>
           {!collapsed && (
             <span className="ml-3 text-white font-semibold text-sm tracking-wide uppercase truncate">
-              AdminPanel
+              Заказы ОАО «Поставымебель»
             </span>
           )}
           <button
