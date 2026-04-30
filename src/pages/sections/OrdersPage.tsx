@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import Icon from "@/components/ui/icon";
 import ExportMenu from "@/components/ExportMenu";
 import OrderForm from "@/components/OrderForm";
+import OrderViewModal from "@/components/OrderViewModal";
 import { orders as initialOrders, Order, ORDER_STATUSES } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
 import { useOrderTypes } from "@/context/OrderTypesContext";
@@ -29,6 +30,7 @@ export default function OrdersPage() {
   const [editOrder, setEditOrder] = useState<Order | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [statusMenuId, setStatusMenuId] = useState<string | null>(null);
+  const [viewOrder, setViewOrder] = useState<Order | null>(null);
 
   const statusColorMap = Object.fromEntries(ORDER_STATUSES.map((s) => [s.value, s]));
   const { orderTypes } = useOrderTypes();
@@ -216,8 +218,9 @@ export default function OrdersPage() {
                 filtered.map((order, i) => {
                   const s = statusColorMap[order.status];
                   return (
-                    <tr key={order.id} className="row-hover"
-                      style={{ borderBottom: i < filtered.length - 1 ? "1px solid hsl(220, 15%, 94%)" : "none" }}>
+                    <tr key={order.id} className="row-hover cursor-pointer"
+                      style={{ borderBottom: i < filtered.length - 1 ? "1px solid hsl(220, 15%, 94%)" : "none" }}
+                      onClick={() => setViewOrder(order)}>
                       <td className="px-5 py-3 font-mono text-xs font-semibold"
                         style={{ color: "hsl(142, 65%, 30%)" }}>
                         {order.id}
@@ -251,11 +254,12 @@ export default function OrdersPage() {
                           <span className="text-xs" style={{ color: "hsl(220,10%,65%)" }}>—</span>
                         )}
                       </td>
-                      <td className="px-5 py-3">
-                        <span className="inline-block px-2.5 py-0.5 rounded text-xs font-medium"
-                          style={{ background: s?.bg, color: s?.text }}>
-                          {s?.label ?? order.status}
-                        </span>
+                      <td className="px-5 py-3" onClick={(e) => e.stopPropagation()}>
+                        <StatusBadge
+                          order={order}
+                          s={s}
+                          onChange={(status) => handleStatusChange(order.id, status)}
+                        />
                       </td>
                       <td className="px-5 py-3 text-xs font-mono" style={{ color: "hsl(220, 10%, 50%)" }}>
                         {order.deliveryDate || "—"}
@@ -347,6 +351,23 @@ export default function OrdersPage() {
         </div>
       </div>
 
+      {/* View modal */}
+      {viewOrder && (
+        <OrderViewModal
+          order={orderList.find((o) => o.id === viewOrder.id) ?? viewOrder}
+          onClose={() => setViewOrder(null)}
+          onEdit={canEdit ? () => {
+            setEditOrder(orderList.find((o) => o.id === viewOrder.id) ?? viewOrder);
+            setFormOpen(true);
+            setViewOrder(null);
+          } : undefined}
+          onStatusChange={(status) => {
+            handleStatusChange(viewOrder.id, status);
+            setViewOrder((v) => v ? { ...v, status } : null);
+          }}
+        />
+      )}
+
       {/* Form modal */}
       {formOpen && canEdit && (
         <OrderForm
@@ -390,6 +411,53 @@ export default function OrdersPage() {
             </div>
           </div>
         </div>
+      )}
+    </div>
+  );
+}
+
+function StatusBadge({
+  order,
+  s,
+  onChange,
+}: {
+  order: Order;
+  s: (typeof ORDER_STATUSES)[number] | undefined;
+  onChange: (status: Order["status"]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative inline-block">
+      <button
+        onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
+        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-medium transition-opacity hover:opacity-80 cursor-pointer"
+        style={{ background: s?.bg, color: s?.text }}
+        title="Нажмите для смены статуса"
+      >
+        {s?.label ?? order.status}
+        <Icon name="ChevronDown" size={9} />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={(e) => { e.stopPropagation(); setOpen(false); }} />
+          <div className="absolute left-0 top-full mt-1 rounded-lg overflow-hidden z-50 animate-fade-in"
+            style={{ background: "white", border: "1px solid hsl(220,15%,88%)", boxShadow: "0 6px 20px rgba(0,0,0,0.12)", minWidth: "180px" }}>
+            {ORDER_STATUSES.map((st) => (
+              <button
+                key={st.value}
+                onClick={(e) => { e.stopPropagation(); onChange(st.value); setOpen(false); }}
+                className="flex items-center gap-2.5 w-full px-3 py-2 text-xs text-left transition-colors"
+                style={{ color: "hsl(220,20%,20%)" }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = st.bg)}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+              >
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: st.text }} />
+                {st.label}
+                {order.status === st.value && <Icon name="Check" size={11} className="ml-auto text-green-600" />}
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
