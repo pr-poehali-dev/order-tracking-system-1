@@ -4,16 +4,18 @@ import HomePage from "@/pages/sections/HomePage";
 import OrdersPage from "@/pages/sections/OrdersPage";
 import UsersPage from "@/pages/sections/UsersPage";
 import SettingsPage from "@/pages/sections/SettingsPage";
+import OrderTypesPage from "@/pages/sections/OrderTypesPage";
 
 interface Props {
   onLogout: () => void;
 }
 
-type Section = "home" | "orders" | "users" | "settings";
+type Section = "home" | "orders" | "users" | "settings" | "order-types";
 
 const navItems: { id: Section; label: string; icon: string }[] = [
   { id: "home", label: "Главная", icon: "LayoutDashboard" },
   { id: "orders", label: "Заказы", icon: "ShoppingCart" },
+  { id: "order-types", label: "Справочники", icon: "BookOpen" },
 ];
 
 export default function Dashboard({ onLogout }: Props) {
@@ -159,6 +161,7 @@ export default function Dashboard({ onLogout }: Props) {
         {active === "orders" && <OrdersPage />}
         {active === "users" && <UsersPage />}
         {active === "settings" && <SettingsPage />}
+        {active === "order-types" && <OrderTypesPage />}
       </main>
     </div>
   );

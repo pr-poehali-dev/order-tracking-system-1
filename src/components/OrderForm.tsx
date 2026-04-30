@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Icon from "@/components/ui/icon";
 import { Order, OrderPosition, REGIONS, newPosition } from "@/data/mockData";
+import { useOrderTypes } from "@/context/OrderTypesContext";
 
 interface Props {
   initial?: Order | null;
@@ -18,9 +19,11 @@ const emptyOrder = (): Omit<Order, "id" | "amount" | "status" | "date" | "manage
   positions: [newPosition(1)],
   agreementDate: "",
   deliveryDate: "",
+  orderTypeId: "",
 });
 
 export default function OrderForm({ initial, onSave, onCancel }: Props) {
+  const { orderTypes } = useOrderTypes();
   const [form, setForm] = useState<ReturnType<typeof emptyOrder>>(
     initial
       ? {
@@ -33,6 +36,7 @@ export default function OrderForm({ initial, onSave, onCancel }: Props) {
           positions: initial.positions,
           agreementDate: initial.agreementDate,
           deliveryDate: initial.deliveryDate,
+          orderTypeId: initial.orderTypeId ?? "",
         }
       : emptyOrder()
   );
@@ -75,6 +79,7 @@ export default function OrderForm({ initial, onSave, onCancel }: Props) {
       status: initial?.status ?? "new",
       date: initial?.date ?? new Date().toISOString().slice(0, 10),
       manager: initial?.manager ?? "Козлов А.П.",
+      orderTypeId: form.orderTypeId || undefined,
     };
     onSave(order);
   };
@@ -115,10 +120,25 @@ export default function OrderForm({ initial, onSave, onCancel }: Props) {
             </Field>
           </div>
 
-          {/* Телефон */}
-          <Field label="Телефон">
-            <Input value={form.phone} onChange={(v) => setField("phone", v)} placeholder="+375 29 123-45-67" />
-          </Field>
+          {/* Телефон + Тип заказа */}
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Телефон">
+              <Input value={form.phone} onChange={(v) => setField("phone", v)} placeholder="+375 29 123-45-67" />
+            </Field>
+            <Field label="Тип заказа">
+              <select
+                value={form.orderTypeId}
+                onChange={(e) => setField("orderTypeId", e.target.value)}
+                className="w-full rounded-lg px-3 py-2 text-sm outline-none"
+                style={{ border: "1px solid hsl(220, 15%, 84%)", color: form.orderTypeId ? "hsl(220,25%,12%)" : "hsl(220,10%,60%)" }}
+              >
+                <option value="">Не выбран</option>
+                {orderTypes.map((ot) => (
+                  <option key={ot.id} value={ot.id}>{ot.name}</option>
+                ))}
+              </select>
+            </Field>
+          </div>
 
           {/* Область + Город */}
           <div className="grid grid-cols-2 gap-3">

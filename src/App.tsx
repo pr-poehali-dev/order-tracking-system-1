@@ -6,12 +6,14 @@ import LoginPage from "@/pages/LoginPage";
 import Dashboard from "@/pages/Dashboard";
 import { SettingsProvider } from "@/context/SettingsContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { OrderTypesProvider } from "@/context/OrderTypesContext";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <AuthProvider>
+      <OrderTypesProvider>
       <SettingsProvider>
         <TooltipProvider>
           <Toaster />
@@ -23,6 +25,7 @@ export default function App() {
           )}
         </TooltipProvider>
       </SettingsProvider>
+      </OrderTypesProvider>
     </AuthProvider>
   );
 }

@@ -1,5 +1,11 @@
 import type { UserRole } from "@/context/AuthContext";
 
+export interface OrderType {
+  id: string;
+  name: string;
+  color: string;
+}
+
 export interface OrderPosition {
   id: string;
   name: string;
@@ -28,6 +34,7 @@ export interface Order {
   status: OrderStatus;
   date: string;
   manager: string;
+  orderTypeId?: string;
 }
 
 export interface AppUser {
@@ -108,6 +115,12 @@ export const users: AppUser[] = [
   { id: "USR-003", name: "Петров Игорь Владимирович",  login: "petrov",    password: "Pass789",   role: "marketer",   status: "active",   lastLogin: "2026-04-29 17:22", ordersCount: 29 },
   { id: "USR-004", name: "Смирнова Елена Юрьевна",     login: "smirnova",  password: "Pass321",   role: "production", status: "inactive", lastLogin: "2026-04-15 11:05", ordersCount: 0  },
   { id: "USR-005", name: "Дмитриев Кирилл Олегович",   login: "dmitriev",  password: "Pass654",   role: "production", status: "active",   lastLogin: "2026-04-28 14:30", ordersCount: 0  },
+];
+
+export const initialOrderTypes: OrderType[] = [
+  { id: "OT-001", name: "Розничный",    color: "#6366f1" },
+  { id: "OT-002", name: "Оптовый",      color: "#f59e0b" },
+  { id: "OT-003", name: "Корпоративный", color: "#10b981" },
 ];
 
 export const statsCards = [

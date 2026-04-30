@@ -4,6 +4,7 @@ import ExportMenu from "@/components/ExportMenu";
 import OrderForm from "@/components/OrderForm";
 import { orders as initialOrders, Order, ORDER_STATUSES } from "@/data/mockData";
 import { useAuth } from "@/context/AuthContext";
+import { useOrderTypes } from "@/context/OrderTypesContext";
 
 const PRODUCTION_STATUSES = ORDER_STATUSES.filter((s) =>
   ["processing", "assembly", "completed", "cancelled"].includes(s.value)
@@ -29,6 +30,8 @@ export default function OrdersPage() {
   const [statusMenuId, setStatusMenuId] = useState<string | null>(null);
 
   const statusColorMap = Object.fromEntries(ORDER_STATUSES.map((s) => [s.value, s]));
+  const { orderTypes } = useOrderTypes();
+  const orderTypeMap = Object.fromEntries(orderTypes.map((t) => [t.id, t]));
 
   const filtered = useMemo(() => {
     let list = [...orderList];
@@ -167,6 +170,7 @@ export default function OrdersPage() {
                   { label: "Клиент", col: "client" as keyof Order },
                   { label: "Регион", col: "region" as keyof Order },
                   { label: "Сумма, руб.", col: "amount" as keyof Order },
+                  { label: "Тип", col: "orderTypeId" as keyof Order },
                   { label: "Статус", col: "status" as keyof Order },
                   { label: "Поставка", col: "deliveryDate" as keyof Order },
                 ].map((h) => (
@@ -216,6 +220,22 @@ export default function OrdersPage() {
                       <td className="px-5 py-3 font-mono text-sm font-medium"
                         style={{ color: "hsl(220, 25%, 15%)" }}>
                         {order.amount > 0 ? order.amount.toLocaleString("ru-RU") : "—"}
+                      </td>
+                      <td className="px-5 py-3">
+                        {order.orderTypeId && orderTypeMap[order.orderTypeId] ? (
+                          <span
+                            className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                            style={{
+                              background: orderTypeMap[order.orderTypeId].color + "22",
+                              color: orderTypeMap[order.orderTypeId].color,
+                              border: `1px solid ${orderTypeMap[order.orderTypeId].color}55`,
+                            }}
+                          >
+                            {orderTypeMap[order.orderTypeId].name}
+                          </span>
+                        ) : (
+                          <span className="text-xs" style={{ color: "hsl(220,10%,65%)" }}>—</span>
+                        )}
                       </td>
                       <td className="px-5 py-3">
                         <span className="inline-block px-2.5 py-0.5 rounded text-xs font-medium"
