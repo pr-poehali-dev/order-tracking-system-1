@@ -1,14 +1,8 @@
 import Icon from "@/components/ui/icon";
-import { statsCards, orders } from "@/data/mockData";
+import { statsCards, orders, ORDER_STATUSES } from "@/data/mockData";
 import { useSettings } from "@/context/SettingsContext";
 
-const statusColors: Record<string, { bg: string; text: string; label: string }> = {
-  new: { bg: "hsl(210, 80%, 93%)", text: "hsl(210, 72%, 35%)", label: "Новый" },
-  processing: { bg: "hsl(38, 90%, 93%)", text: "hsl(38, 72%, 35%)", label: "В работе" },
-  shipped: { bg: "hsl(260, 70%, 93%)", text: "hsl(260, 60%, 40%)", label: "Отгружен" },
-  completed: { bg: "hsl(142, 60%, 92%)", text: "hsl(142, 65%, 28%)", label: "Выполнен" },
-  cancelled: { bg: "hsl(0, 60%, 93%)", text: "hsl(0, 65%, 40%)", label: "Отменён" },
-};
+const statusColors = Object.fromEntries(ORDER_STATUSES.map((s) => [s.value, s]));
 
 function getRowHighlight(deliveryDate: string, rules: { days: number; color: string }[]): string | null {
   if (!deliveryDate) return null;
