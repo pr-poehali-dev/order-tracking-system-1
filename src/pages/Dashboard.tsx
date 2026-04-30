@@ -14,7 +14,6 @@ type Section = "home" | "orders" | "users" | "settings";
 const navItems: { id: Section; label: string; icon: string }[] = [
   { id: "home", label: "Главная", icon: "LayoutDashboard" },
   { id: "orders", label: "Заказы", icon: "ShoppingCart" },
-  { id: "users", label: "Пользователи", icon: "Users" },
 ];
 
 export default function Dashboard({ onLogout }: Props) {
